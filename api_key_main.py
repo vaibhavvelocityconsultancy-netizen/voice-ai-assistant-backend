@@ -78,7 +78,7 @@ async def start_greeting(bot: str = "appointment"):
     elif bot.lower() == "insurance":
         # Greeting for Insurance Assistance Center
         greeting = "Hello! This is the Insurance Assistance Center. How can I assist you?"
-        voice = "onyx"  # Male voice
+        voice = "echo"  # Male voice
     else:
         return JSONResponse(
             content={"error": "Invalid bot type. Use 'appointment' or 'insurance'."},
@@ -159,16 +159,17 @@ async def insurance_chat(file: UploadFile = File(...), background_tasks: Backgro
         # STEP 1: STT (blocking → thread)
         user_text = await asyncio.to_thread(speech_to_text, temp_audio)
         print("🧑 User said:", user_text)
-
+   
         if not user_text.strip():
             user_text = "Silent audio detected"
 
         # STEP 2: GPT reply
         bot_reply = await asyncio.to_thread(insurance_gpt, user_text)
+        # bot_reply = insurance_gpt(user_text)
         print("🤖 Bot reply:", bot_reply)
 
         # STEP 3: TTS
-        audio_out = await asyncio.to_thread(text_to_speech, bot_reply,"onyx")
+        audio_out = await asyncio.to_thread(text_to_speech, bot_reply,"echo")
 
         output_file = f"reply_{unique_id}.mp3"
         with open(output_file, "wb") as f:
